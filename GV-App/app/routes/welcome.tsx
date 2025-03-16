@@ -1,13 +1,12 @@
-import React, { Suspense } from 'react';
+import React from 'react'
+import { Container, Typography } from '@mui/material'
 
 export function Welcome() {
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
-      <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
-        <header className="flex flex-col items-center gap-9">
-            GOGO GV!
-        </header>
-      </div>
-    </main>
+    <Container className="flex items-center justify-center pt-16 pb-4">
+      <Typography variant="h4" component="h1">
+        GOGO GV!
+      </Typography>
+    </Container>
   );
 }
