@@ -5,7 +5,8 @@
   "main": "index.cjs",
   "scripts": {
     "build": "tsc --outDir dist && vite build",
-    "dev": "concurrently \"tsc --outDir dist\" \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev": "concurrently \"tsc --outDir dist\" \"vite\" \"wait-on http://localhost:5173\"",
+    "edev": "concurrently \"tsc --outDir dist\" \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "prestart": "tsc --outDir dist",
     "typecheck": "react-router typegen && tsc",
     "react-dev": "vite"
