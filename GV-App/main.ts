@@ -18,11 +18,7 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL(
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:5173'
-      : `file://${path.join(__dirname, 'dist/index.html')}`
-  ).then(() => {
+  mainWindow.loadURL('http://localhost:5173').then(() => {
     console.log('Window loaded successfully');
   }).catch(err => {
     console.error('Failed to load window:', err);

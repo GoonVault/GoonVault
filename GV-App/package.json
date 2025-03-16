@@ -4,25 +4,21 @@
   "type": "module",
   "main": "index.cjs",
   "scripts": {
-    "build": "react-router build && tsc --outDir dist",
+    "build": "tsc --outDir dist && vite build",
     "dev": "concurrently \"tsc --outDir dist\" \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "prestart": "tsc --outDir dist",
-    "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "electron:build": "react-router build && tsc --outDir dist && electron-builder",
     "react-dev": "vite"
   },
   "dependencies": {
-    "@react-router/node": "^7.3.0",
-    "@react-router/serve": "^7.3.0",
     "@vitejs/plugin-react": "^4.3.4",
     "isbot": "^5.1.17",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.3.0"
+    "react-router": "^7.3.0",
+    "react-router-dom": "^7.3.0"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.3.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^20",
     "@types/react": "^19.0.1",
