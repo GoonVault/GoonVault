@@ -1,12 +1,22 @@
-import React from 'react'
-import { Container, Typography } from '@mui/material'
+import React from "react";
+import { Box, Container, Typography } from "@mui/material";
+import { Header } from "./Header";
+import { MainContent } from "./MainContent";
+import { Footer } from "./Footer";
 
 export function Main() {
   return (
-    <Container className="flex items-center justify-center pt-16 pb-4">
-      <Typography variant="h4" component="h1">
-        Main
-      </Typography>
-    </Container>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <Header />
+      <MainContent />
+      <Footer />
+    </Box>
   );
 }
