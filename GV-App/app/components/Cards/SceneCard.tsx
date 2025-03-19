@@ -1,181 +1,143 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  IconButton,
-} from "@mui/material";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import React, { useState, useRef } from "react";
+import { Box, Card, Typography } from "@mui/material";
 import { VideoPlayer } from "../VideoPlayer";
-import { videoService } from "../../services/videoService";
+import { useLayout } from "../../LayoutProvider";
 
 interface SceneCardProps {
   path: string;
   onClick?: () => void;
   compact?: boolean;
+  isSelected: boolean;
+  onSelect: (path: string) => void;
 }
 
 const SceneCard: React.FC<SceneCardProps> = ({
   path,
   onClick,
   compact = true,
+  isSelected,
+  onSelect,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
-  const fileName = path.split(/[/\\]/).pop() || "Unknown";
-
-  // Add a ref to track hover state for cleanup
+  const fileNameWithExtension = path.split(/[/\\]/).pop() || "Unknown";
+  const fileName = fileNameWithExtension.replace(/\.[^/.]+$/, ""); // Remove file extension
   const hoverTimeoutRef = useRef<number | null>(null);
+  const { getTileDimensions } = useLayout();
+  const { width, height } = getTileDimensions();
 
-  // Get a thumbnail URL for the video
-  useEffect(() => {
-    // Set up a "poster" for the video by using the video itself
-    const videoUrl = videoService.getStreamUrl(path);
-    setThumbnailUrl(videoUrl);
-  }, [path]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        window.clearTimeout(hoverTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Start playing on hover with a slight delay to prevent accidental hovers
+  // Start playing on hover with a slight delay
   const handleMouseEnter = () => {
-    // Clear any existing timeout
     if (hoverTimeoutRef.current) {
       window.clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
     }
 
-    // Set a short delay before playing (50ms is barely noticeable but helps with quick passes)
     hoverTimeoutRef.current = window.setTimeout(() => {
       setIsHovering(true);
     }, 50);
   };
 
-  // Stop playing when hover ends - immediately
+  // Stop playing when hover ends
   const handleMouseLeave = () => {
-    // Clear any pending hover timeout
     if (hoverTimeoutRef.current) {
       window.clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
     }
-
-    // Stop playback immediately
     setIsHovering(false);
   };
 
-  // Handle click (separate from hover behavior)
-  const handleCardClick = () => {
-    if (onClick) {
-      onClick();
-    }
+  const handleSelect = () => {
+    onSelect(path);
   };
 
   return (
     <Card
       sx={{
-        m: 1,
         cursor: "pointer",
-        height: compact ? 180 : "auto",
-        display: "flex",
-        flexDirection: "column",
+        width: compact ? width : "auto",
+        height: compact ? height : "auto",
         transition: "transform 0.2s",
         "&:hover": {
           transform: "scale(1.03)",
           boxShadow: 3,
+          "& .overlay": {
+            display: "none",
+          },
         },
-        overflow: "hidden", // Prevent video from overflowing during scale transform
+        position: "relative",
+        backgroundColor: isSelected ? "rgba(0, 0, 255, 0.3)" : "black", // Highlight selected card
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={handleCardClick}
+      onClick={handleSelect}
     >
-      {isHovering ? (
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <VideoPlayer
+          filePath={path}
+          muted={true}
+          autoPlay={isHovering}
+          controls={false}
+          inTile={true}
+        />
         <Box
+          className="overlay"
           sx={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
             width: "100%",
-            height: "100%",
-            overflow: "hidden",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            color: "white",
+            padding: "8px",
+            justifyContent: "center",
+            display: "flex",
           }}
         >
-          <VideoPlayer
-            filePath={path}
-            muted={true} // Mute by default for hover preview
-            autoPlay={true} // Auto play on hover
-            inTile={true} // Hide play button
-            controls={false} // Hide controls for hover preview
-          />
-        </Box>
-      ) : (
-        <>
-          <CardMedia
-            component="div"
+          <Typography
+            variant="body2"
             sx={{
-              height: 120,
-              bgcolor: "rgba(0, 0, 0, 0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
-            {/* Video Thumbnail */}
-            <video
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                position: "absolute",
-                top: 0,
-                left: 0,
-              }}
-              src={thumbnailUrl}
-              preload="metadata"
-              muted
-              playsInline
-              // Setting currentTime to 0.1 helps load the first frame faster
-              onLoadedMetadata={(e) => {
-                e.currentTarget.currentTime = 0.1;
-              }}
-            />
-
-            {/* Play Icon Overlay */}
-            <IconButton
-              sx={{
-                position: "absolute",
-                backgroundColor: "rgba(0, 0, 0, 0.6)",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.8)",
-                },
-                zIndex: 2, // Make sure it's above the thumbnail
-              }}
-            >
-              <PlayArrowIcon fontSize="large" sx={{ color: "white" }} />
-            </IconButton>
-          </CardMedia>
-          <CardContent sx={{ p: 1, flexGrow: 1, overflow: "hidden" }}>
-            <Typography
-              variant="body2"
-              sx={{
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {fileName}
-            </Typography>
-          </CardContent>
-        </>
-      )}
+            {fileName}
+          </Typography>
+        </Box>
+        <Box
+          className="overlay"
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            color: "white",
+            padding: "8px",
+          }}
+        >
+          <Typography variant="body2">Top Left Overlay</Typography>
+        </Box>
+        <Box
+          className="overlay"
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            color: "white",
+            padding: "8px",
+          }}
+        >
+          <Typography variant="body2">Top Right Overlay</Typography>
+        </Box>
+      </Box>
     </Card>
   );
 };

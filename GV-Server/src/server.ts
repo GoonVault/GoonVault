@@ -16,11 +16,6 @@ interface Video {
   path: string;
 }
 
-interface VideoResponse {
-  videos: Video[];
-  error?: string;
-}
-
 interface StatusResponse {
   status: string;
   version: string;

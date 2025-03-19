@@ -1,10 +1,15 @@
-import React from 'react';
-import { AppBar, Typography } from '@mui/material';
+import React, { useEffect } from "react";
+import { AppBar, Typography, Box } from "@mui/material";
+import QuickFilter from "./QuickFilter";
 
-export function Footer() {
+interface FooterProps {}
+
+const Footer: React.FC<FooterProps> = ({}) => {
   return (
-    <Typography>
-      Footer
-    </Typography>
+    <Box>
+      <QuickFilter />
+    </Box>
   );
-}
+};
+
+export default Footer;

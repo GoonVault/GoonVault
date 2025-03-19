@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Box } from "@mui/material";
 import { Header } from "./Header";
 import { MainContent } from "./MainContent";
-import { Footer } from "./Footer";
+import Footer from "./Footer";
+import { LayoutControls } from "./LayoutControls";
+import { AppContext } from "../AppProvider";
 
 export function Main() {
   return (
@@ -19,12 +21,13 @@ export function Main() {
       <Box sx={{ position: "sticky", top: 0, zIndex: 1100 }}>
         <Header />
       </Box>
-
+      <LayoutControls />
       {/* Scrollable Content Area */}
       <Box
         sx={{
           flex: "1 1 auto",
-          overflow: "hidden",
+          overflowY: "auto", // Allow vertical scrolling
+          overflowX: "hidden", // Prevent horizontal scrolling
           display: "flex",
           flexDirection: "column",
         }}

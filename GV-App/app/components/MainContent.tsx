@@ -1,26 +1,24 @@
-import { Box, Typography, Divider } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useContext } from "react";
-import { AppContext } from "../AppProvider";
 import { VideoGrid } from "./VideoGrid";
+import { AppContext } from "../AppProvider";
 
-export function MainContent() {
-  const context = useContext(AppContext);
+interface MainContentProps {}
 
-  if (!context) {
-    return <Typography>Context not available</Typography>;
-  }
+export function MainContent({}: MainContentProps) {
+  const { filteredState } = useContext(AppContext);
 
   return (
     <Box
       sx={{
         flex: "1 1 auto",
         overflowY: "auto", // Keep this for MainContent scrolling
+        overflowX: "hidden", // Prevent horizontal scrolling
         p: 2,
         height: "100%", // Fill the available space
       }}
     >
-      <Divider sx={{ mb: 3 }} />
-      <VideoGrid videoPaths={context.state} />
+      <VideoGrid videoPaths={filteredState} />
     </Box>
   );
 }

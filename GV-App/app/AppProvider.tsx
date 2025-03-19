@@ -1,17 +1,23 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
 
-interface AppContextType {
-  state: string[];
-  setState: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
-interface AppProviderProps {
+interface Props {
   children: ReactNode;
 }
 
-export const AppProvider = ({ children }: AppProviderProps) => {
+interface AppContext {
+  filteredState: string[];
+  filter: Filter;
+  setFilter: React.Dispatch<React.SetStateAction<Filter>>;
+}
+
+interface Filter {
+  searchText: string;
+}
+
+const AppContext = createContext<AppContext>({} as AppContext);
+
+export const AppProvider = ({ children }: Props) => {
+  const [filter, setFilter] = useState<Filter>({ searchText: "" });
   const [state, setState] = useState([
     `B:\\PMV\\Let Me Keep My Socks On _67cb57d30c984c9d500fb5bb.mp4`,
     "B:\\PMV\\TREAT ME LIKE A SLUT - BBC PMV_67c9f370a114785c745c49f9.mp4",
@@ -41,9 +47,20 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     `B:\\PMV\\65a70ffe90be8822f6a50647 (1).mp4`,
     `B:\\PMV\\65a70ffe90be8822f6a50647.mp4`,
   ]);
+  const [filteredState, setFilteredState] = useState<string[]>(state);
+
+  useEffect(() => {
+    const filtered = state.filter((x) =>
+      filter.searchText
+        ? x.toLowerCase().includes(filter.searchText.toLowerCase())
+        : true
+    );
+    console.log(filtered.length);
+    setFilteredState(filtered);
+  }, [state, filter]);
 
   return (
-    <AppContext.Provider value={{ state, setState }}>
+    <AppContext.Provider value={{ filteredState, filter, setFilter }}>
       {children}
     </AppContext.Provider>
   );

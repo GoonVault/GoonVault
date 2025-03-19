@@ -1,6 +1,7 @@
 import React from "react";
 import ReactPlayer from "react-player";
 import { videoService } from "../services/videoService";
+import { formControlClasses } from "@mui/material";
 
 interface VideoPlayerProps {
   filePath: string;
@@ -18,7 +19,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   inTile = false,
 }) => {
   const videoUrl = videoService.getStreamUrl(filePath);
-
   return (
     <div
       style={{

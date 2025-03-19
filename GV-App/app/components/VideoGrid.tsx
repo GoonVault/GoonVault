@@ -2,21 +2,19 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from "@mui/material";
 import { FixedSizeGrid } from "react-window";
 import SceneCard from "./Cards/SceneCard";
+import { useLayout } from "../LayoutProvider";
 
 interface VideoGridProps {
   videoPaths: string[];
 }
 
 export const VideoGrid: React.FC<VideoGridProps> = ({ videoPaths }) => {
-  // Dimensions for the container
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const { columnsPerRow, getTileDimensions } = useLayout();
+  const { width: tileWidth, height: tileHeight } = getTileDimensions();
 
-  // Tile dimensions
-  const COLUMN_WIDTH = 280; // Slightly wider to accommodate card padding
-  const ROW_HEIGHT = 220; // Slightly taller to accommodate card padding
-
-  // Update dimensions on mount and resize
   useEffect(() => {
     const updateDimensions = () => {
       if (gridContainerRef.current) {
@@ -26,13 +24,9 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videoPaths }) => {
       }
     };
 
-    // Initial update
     updateDimensions();
-
-    // Add resize listener
     window.addEventListener("resize", updateDimensions);
 
-    // Cleanup
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
@@ -44,30 +38,39 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videoPaths }) => {
     );
   }
 
-  // Calculate grid dimensions
   const { width, height } = dimensions;
-  const columnCount = Math.max(1, Math.floor(width / COLUMN_WIDTH));
+  const columnCount = columnsPerRow;
   const rowCount = Math.ceil(videoPaths.length / columnCount);
 
-  // Cell renderer
+  const handleSelect = (path: string) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.includes(path)
+        ? prevSelected.filter((item) => item !== path)
+        : [...prevSelected, path]
+    );
+  };
+
   const Cell = ({ columnIndex, rowIndex, style }: any) => {
     const index = rowIndex * columnCount + columnIndex;
     if (index >= videoPaths.length) return null;
 
     const path = videoPaths[index];
+    const isSelected = selectedItems.includes(path);
 
-    // Add some padding inside the cell
-    const innerStyle = {
+    // Add padding around each tile
+    const paddedStyle = {
       ...style,
-      left: (style.left as number) + 8,
-      top: (style.top as number) + 8,
-      width: (style.width as number) - 16,
-      height: (style.height as number) - 16,
+      padding: 8, // Adjust padding as needed
     };
 
     return (
-      <div style={innerStyle}>
-        <SceneCard path={path} compact={true} />
+      <div style={paddedStyle}>
+        <SceneCard
+          path={path}
+          compact={true}
+          isSelected={isSelected}
+          onSelect={handleSelect}
+        />
       </div>
     );
   };
@@ -77,19 +80,19 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ videoPaths }) => {
       ref={gridContainerRef}
       sx={{
         width: "100%",
-        height: "100%", // Take full height of parent container
-        overflow: "visible", // Don't add scrollbars here
+        height: "100%",
+        overflow: "visible",
       }}
     >
       {width > 0 && height > 0 && (
         <FixedSizeGrid
           columnCount={columnCount}
-          columnWidth={COLUMN_WIDTH}
+          columnWidth={tileWidth + 16} // Adjust column width to account for padding
           height={height}
           rowCount={rowCount}
-          rowHeight={ROW_HEIGHT}
+          rowHeight={tileHeight + 16} // Adjust row height to account for padding
           width={width}
-          style={{ overflow: "visible" }} // Let parent handle scrolling
+          style={{ overflow: "visible" }}
         >
           {Cell}
         </FixedSizeGrid>
