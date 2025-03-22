@@ -5,6 +5,9 @@
 /dist
 .pnp.js
 
+# databases
+*.sqlite
+
 # testing
 /coverage
 

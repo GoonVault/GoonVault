@@ -14,6 +14,7 @@ export function Main() {
         flexDirection: "column",
         height: "100vh",
         width: "100%",
+        gap: 1,
         overflow: "hidden", // Prevent scrolling at this level
       }}
     >
@@ -36,7 +37,7 @@ export function Main() {
       </Box>
 
       {/* Sticky Footer */}
-      <Box sx={{ position: "sticky", bottom: 0, zIndex: 1000 }}>
+      <Box sx={{ position: "sticky", bottom: 0, zIndex: 1000, mb: 1 }}>
         <Footer />
       </Box>
     </Box>

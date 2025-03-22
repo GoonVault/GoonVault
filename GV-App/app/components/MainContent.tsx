@@ -14,7 +14,6 @@ export function MainContent({}: MainContentProps) {
         flex: "1 1 auto",
         overflowY: "auto", // Keep this for MainContent scrolling
         overflowX: "hidden", // Prevent horizontal scrolling
-        p: 2,
         height: "100%", // Fill the available space
       }}
     >

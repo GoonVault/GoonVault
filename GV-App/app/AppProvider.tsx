@@ -12,12 +12,13 @@ interface AppContext {
 
 interface Filter {
   searchText: string;
+  rating: string; // Add rating property
 }
 
 const AppContext = createContext<AppContext>({} as AppContext);
 
 export const AppProvider = ({ children }: Props) => {
-  const [filter, setFilter] = useState<Filter>({ searchText: "" });
+  const [filter, setFilter] = useState<Filter>({ searchText: "", rating: "" });
   const [state, setState] = useState([
     `B:\\PMV\\Let Me Keep My Socks On _67cb57d30c984c9d500fb5bb.mp4`,
     "B:\\PMV\\TREAT ME LIKE A SLUT - BBC PMV_67c9f370a114785c745c49f9.mp4",
@@ -50,10 +51,11 @@ export const AppProvider = ({ children }: Props) => {
   const [filteredState, setFilteredState] = useState<string[]>(state);
 
   useEffect(() => {
-    const filtered = state.filter((x) =>
-      filter.searchText
-        ? x.toLowerCase().includes(filter.searchText.toLowerCase())
-        : true
+    const filtered = state.filter(
+      (x) =>
+        (filter.searchText
+          ? x.toLowerCase().includes(filter.searchText.toLowerCase())
+          : true) && (filter.rating ? x.includes(filter.rating) : true) // Add rating filter logic
     );
     console.log(filtered.length);
     setFilteredState(filtered);
