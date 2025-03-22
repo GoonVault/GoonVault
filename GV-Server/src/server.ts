@@ -3,6 +3,12 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 
+// Import routes
+import scenesRouter from "./routes/scenes";
+import starsRouter from "./routes/stars";
+import categoriesRouter from "./routes/categories";
+import genresRouter from "./routes/genres";
+
 const app = express();
 
 // Middleware
@@ -23,6 +29,12 @@ interface StatusResponse {
 
 // Sample video directory - adjust to your actual path
 const VIDEO_DIR = "C:/Videos";
+
+// API Routes
+app.use("/api/scenes", scenesRouter);
+app.use("/api/stars", starsRouter);
+app.use("/api/categories", categoriesRouter);
+app.use("/api/genres", genresRouter);
 
 // Stream video from arbitrary path
 app.get("/stream-path", (req: Request, res: Response): void => {
